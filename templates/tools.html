@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <table>
+    <thead>
+      <tr>
+        <th>Tool Image</th>
+        <th>Tool Name</th>
+        <th>Price</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for tool in tools %}
+          <tr>
+            <td><img src="{{ url_for('static', filename='images/' + tool.tool_image) }}" alt="{{ tool.tool_name }}"></td>
+            <td>{{ tool.tool_name }}</td>
+            <td>${{ tool.tool_price }}</td>
+            <td><button onclick="addToCart('{{ tool.tool_id }}', '{{ tool.tool_name }}', '{{ tool.tool_image }}', '{{ tool.tool_price }}')">Add to Cart</button></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      
+  </table>
+
+  <div id="cart"></div>
+
+  <script>
+    var cart = [];
+
+    function addToCart(itemId, itemName, itemImage, itemPrice) {
+        // check if item already exists in cart
+        for (var i = 0; i < cart.length; i++) {
+          if (cart[i].id == itemId) {
+            // item already exists, update quantity
+            cart[i].quantity += 1;
+            updateCart();
+            return;
+          }
+        }
+      
+        // item doesn't exist in cart, add it
+        cart.push({
+          id: itemId,
+          name: itemName,
+          image: itemImage,
+          price: itemPrice,
+          quantity: 1
+        });
+      
+        updateCart();
+      }
+      
+      function updateCart() {
+        var total = 0;
+        var cartHTML = '<ul>';
+        for (var i = 0; i < cart.length; i++) {
+          total += parseFloat(cart[i].price) * cart[i].quantity;
+          cartHTML += '<li>';
+          if (cart[i].image) {
+            cartHTML += '<img src="/static/images/' + cart[i].image + '" alt="' + cart[i].name + '"> ';
+          }
+          cartHTML += cart[i].name + ' - $' + cart[i].price + ' x ' + cart[i].quantity + '</li>';
+        }
+        cartHTML += '</ul>';
+        cartHTML += '<p>Total: $' + total.toFixed(2) + '</p>';
+      
+        document.getElementById("cart").innerHTML = "Cart: " + cart.length + " items" + cartHTML;
+      }
+      
+      
+
+  </script>
+{% endblock %}
