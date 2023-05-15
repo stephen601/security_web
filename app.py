@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import os
+from datetime import datetime, time
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///USH.sqlite'
@@ -22,6 +23,15 @@ class Users(db.Model):
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50))
+
+
+class HelpDesk(db.Model):
+    __tablename__ = 'HelpDesk'
+    ticket_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ticket_description = db.Column(db.String(100), nullable=False)
+    ticket_date = db.Column(db.Date, nullable=False)
+    ticket_time = db.Column(db.Time, nullable=False)
+    resolved = db.Column(db.Boolean, default=False)
 
 
 @app.route('/')
@@ -62,6 +72,30 @@ def login():
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
+
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        description = request.form['description']
+        date_str = request.form['date']
+        time_str = request.form['time']
+
+        # Convert the date and time strings to Python date and time objects
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        time_obj = datetime.strptime(time_str, '%H:%M').time()
+
+        help_desk_entry = HelpDesk(
+            ticket_description=description,
+            ticket_date=date,
+            ticket_time=time_obj
+        )
+        db.session.add(help_desk_entry)
+        db.session.commit()
+
+        return redirect(url_for('index'))
+
+    return render_template('contact.html')
 
 
 if __name__ == '__main__':
