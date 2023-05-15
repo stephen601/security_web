@@ -1,8 +1,15 @@
 {% extends 'layout.html' %}
-{%block content%}
-<h1>Uncle Sam's Hardware Store</h1>
-<h2>Welcome to Uncle Sam's Hardware Store</h2>
-<p>We have a variety of tools and services avialable. </p>
-<h3>About Us</h3>
-<p>Welcome to Uncle Sam's Hardware, where you'll find everything you need for your DIY projects and home repairs! We're proud to be a veteran-owned business, and we're committed to providing friendly service and top-quality products at affordable prices. Come visit us today and see why Uncle Sam's Hardware is the best place in town for all your hardware needs.</p>
-{%endblock%}
+
+{% block content %}
+  {% if logged_in %}
+    <h2>Welcome! You are logged in.</h2>
+    <!-- Add your logged-in content here -->
+    <p>This is the content for logged-in users.</p>
+    <button><a href="/logout">Log out</a></button>
+  {% else %}
+    <h2>Welcome! Please log in.</h2>
+    <!-- Add your non-logged-in content here -->
+    <p>This is the content for non-logged-in users.</p>
+    <button><a href="/login">Log in</a></button>
+  {% endif %}
+{% endblock %}
