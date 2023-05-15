@@ -1,12 +1,12 @@
 var cart = [];
 
-function addToCart(itemId, itemName, itemImage, itemPrice) {
+function addToCartTools(itemId, itemName, itemImage, itemPrice) {
     // check if item already exists in cart
     for (var i = 0; i < cart.length; i++) {
         if (cart[i].id == itemId) {
         // item already exists, update quantity
         cart[i].quantity += 1;
-        updateCart();
+        updateCartTools();
         return;
         }
     }
@@ -20,10 +20,10 @@ function addToCart(itemId, itemName, itemImage, itemPrice) {
         quantity: 1
     });
 
-    updateCart();
+    updateCartTools();
     }
 
-    function updateCart() {
+function updateCartTools() {
     var total = 0;
     var cartHTML = '<ul>';
     for (var i = 0; i < cart.length; i++) {

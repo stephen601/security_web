@@ -16,7 +16,7 @@
             <td><img src="{{ url_for('static', filename='images/' + tool.tool_image) }}" alt="{{ tool.tool_name }}"></td>
             <td>{{ tool.tool_name }}</td>
             <td>${{ tool.tool_price }}</td>
-            <td><button onclick="addToCart('{{ tool.tool_id }}', '{{ tool.tool_name }}', '{{ tool.tool_image }}', '{{ tool.tool_price }}')">Add to Cart</button></td>
+            <td><button onclick="addToCartTools('{{ tool.tool_id }}', '{{ tool.tool_name }}', '{{ tool.tool_image }}', '{{ tool.tool_price }}')">Add to Cart</button></td>
           </tr>
         {% endfor %}
       </tbody>
@@ -24,4 +24,5 @@
   </table>
 
   <div id="cart"></div>
+  
 {% endblock %}
