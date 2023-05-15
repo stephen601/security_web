@@ -22,6 +22,7 @@ class Services(db.Model):
     service_description = db.Column(db.String(100), nullable=False)
     service_price = db.Column(db.Float, nullable=False)
 
+
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -106,6 +107,7 @@ def contact():
 def services():
     services = Services.query.all()
     return render_template('services.html', services=services)
+
 
 
 

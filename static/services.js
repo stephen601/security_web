@@ -13,7 +13,7 @@ function addToCart(itemId, itemName, itemPrice) {
     cart.push({
         id: itemId,
         name: itemName,
-        price: itemPrice,
+        price: parseFloat(itemPrice).toFixed(2),
         quantity: 1
     });
 
@@ -26,7 +26,7 @@ function updateCart() {
     for (var i = 0; i < cart.length; i++) {
         total += parseFloat(cart[i].price) * cart[i].quantity;
         cartHTML += '<li>';
-        cartHTML += cart[i].name + ' - $' + cart[i].price + ' x ' + cart[i].quantity + '</li>';
+        cartHTML += cart[i].name + ' - $' + parseFloat(cart[i].price).toFixed(2) + ' x ' + cart[i].quantity + '</li>';
     }
     cartHTML += '</ul>';
     cartHTML += '<p>Total: $' + total.toFixed(2) + '</p>';
