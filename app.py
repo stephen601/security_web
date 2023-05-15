@@ -79,6 +79,10 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
+@app.route('/checkout')
+def checkout():
+    return render_template("checkout.html")
+
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
