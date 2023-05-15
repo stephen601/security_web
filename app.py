@@ -16,6 +16,11 @@ class Tools(db.Model):
     tool_price = db.Column(db.Float, nullable=False)
     tool_image = db.Column(db.String(50))
 
+class Services(db.Model):
+    __tablename__ = 'Services'
+    service_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    service_description = db.Column(db.String(100), nullable=False)
+    service_price = db.Column(db.Float, nullable=False)
 
 class Users(db.Model):
     __tablename__ = 'Users'
@@ -96,9 +101,12 @@ def contact():
         return redirect(url_for('index'))
 
     return render_template('contact.html')
+
 @app.route('/services')
 def services():
-    return render_template('services.html')
+    services = Services.query.all()
+    return render_template('services.html', services=services)
+
 
 
 if __name__ == '__main__':
