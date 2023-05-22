@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 {%block content%}
 
-    <h1>Checkout</h1>
+    <h2>Checkout</h2>
 
-    <h2>Cart Items:</h2>
+    <h3>Cart Items:</h3>
     <ul>
         {% for item in cart %}
             <li>{{ item.name }} - ${{ item.price }} x {{ item.quantity }}</li>
