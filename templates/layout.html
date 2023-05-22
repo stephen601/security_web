@@ -8,8 +8,7 @@
     <nav>
       <ul>
         <li><a href="/">Home</a></li>
-        <li><a href="/tools">Tools</a></li>
-        <li><a href="/services">Services</a></li>
+        <li><a href="/shop">Shop</a></li>
         <li><a href="/contact">Contact</a></li>
         {% if session.logged_in %}
           <li><a href="/checkout">Checkout</a></li>
@@ -21,6 +20,6 @@
     </nav>
     {% block content %}{% endblock %}
     <script src="{{url_for('static', filename='main.js')}}"></script>
-    <script src="{{ url_for('static', filename='services.js') }}"></script>
+    
   </body>
 </html>

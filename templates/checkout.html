@@ -1,4 +1,14 @@
 {% extends 'layout.html' %}
 {%block content%}
 
+    <h1>Checkout</h1>
+
+    <h2>Cart Items:</h2>
+    <ul>
+        {% for item in cart %}
+            <li>{{ item.name }} - ${{ item.price }} x {{ item.quantity }}</li>
+        {% endfor %}
+    </ul>
+
+
 {%endblock%}

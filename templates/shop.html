@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <h1>Shop</h1>
+
+  <h2>Tools:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tool Image</th>
+        <th>Tool Name</th>
+        <th>Price</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tool in tools %}
+        <tr>
+          <td><img src="{{ url_for('static', filename='images/' + tool.tool_image) }}" alt="{{ tool.tool_name }}"></td>
+          <td>{{ tool.tool_name }}</td>
+          <td>${{ tool.tool_price }}</td>
+          <td><button onclick="addToCart('{{ tool.tool_id }}', '{{ tool.tool_name }}', '{{ tool.tool_price }}')">Add to Cart</button></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Services:</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Service Image</th>
+      <th>Service Name</th>
+      <th>Price</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for service in services %}
+      <tr>
+        <td><img src="{{ url_for('static', filename='images/' + service.service_image) }}" alt="{{ service.service_description }}"></td>
+        <td>{{ service.service_description }}</td>
+        <td>${{ '%.2f'|format(service.service_price) }}</td>
+        <td><button onclick="addToCart('{{ service.service_id }}', '{{ service.service_description }}', '{{ service.service_price }}')">Add to Cart</button></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+  <div id="cart"></div>
+  <button onclick="sendCartToCheckout()">Proceed to Checkout</button>
+
+  
+{% endblock %}
