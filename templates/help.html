@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <h2>Help Desk Tickets</h2>
+  <form action="{{ url_for('contact') }}" method="post">
+    <label for="description">Ticket Description:</label>
+    <textarea id="description" name="description" rows="4" cols="50" required></textarea>
+
+    <label for="date">Ticket Date:</label>
+    <input type="date" id="date" name="date" required>
+
+    <label for="time">Ticket Time:</label>
+    <input type="time" id="time" name="time" required>
+
+    <input type="submit" value="Submit">
+  </form>
+{% endblock %}

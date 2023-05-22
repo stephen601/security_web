@@ -92,6 +92,10 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
+@app.route('/help')
+def help():
+    return render_template('help.html')
+
 @app.route('/checkout', methods=['POST'])
 def checkout():
     cart_data = request.form.get('cart')

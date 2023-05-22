@@ -35,13 +35,14 @@
                     Account
                   </a>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Account Information</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                       <a class="dropdown-item" href="/contact">Contact</a>
                     </li>
                     {% if session.logged_in %}
+                        <li><a class="dropdown-item" href="#">Account Information</a></li>
                         <li><a class="dropdown-item" href="#">Employee Dashboard</a></li>
+                        <li><a class="dropdown-item" href="/help">Help Desk</a></li>
                     {% endif %}
                   </ul>
                 </li>
