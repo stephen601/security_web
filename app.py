@@ -198,7 +198,9 @@ def shop():
     services = Services.query.all()
     return render_template('shop.html', tools=tools, services=services)
 
-
+@app.route('/account')
+def account():
+    return render_template('account.html', username=session.get('username'))
 
 
 if __name__ == '__main__':
