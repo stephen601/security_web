@@ -25,17 +25,32 @@ function addToCart(itemId, itemName, itemPrice) {
 
 function updateCart() {
     var total = 0;
-    var cartHTML = '<ul>';
+    var cartDiv = document.getElementById("cart");
+
+    // Create an empty cart list
+    var cartList = document.createElement("ul");
+
     for (var i = 0; i < cart.length; i++) {
         total += parseFloat(cart[i].price) * cart[i].quantity;
-        cartHTML += '<li>';
-        cartHTML += cart[i].name + ' - $' + cart[i].price + ' x ' + cart[i].quantity + '</li>';
-    }
-    cartHTML += '</ul>';
-    cartHTML += '<p>Total: $' + total.toFixed(2) + '</p>';
 
-    document.getElementById("cart").innerHTML = "Cart: " + cart.length + " items" + cartHTML;
+        // Create the cart item and append it to the list
+        var cartItem = document.createElement("li");
+        cartItem.textContent = cart[i].name + ' - $' + cart[i].price + ' x ' + cart[i].quantity;
+        cartList.appendChild(cartItem);
+    }
+
+    // Create the total price paragraph
+    var totalPrice = document.createElement("p");
+    totalPrice.textContent = 'Total: $' + total.toFixed(2);
+
+    // Clear the current cart div content
+    cartDiv.textContent = '';
+
+    // Append the cart list and total price to the cart div
+    cartDiv.appendChild(cartList);
+    cartDiv.appendChild(totalPrice);
 }
+
 
 function sendCartToCheckout() {
     // Convert the cart data to JSON
