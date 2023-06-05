@@ -76,6 +76,11 @@ def login():
             # Successful login
             session['logged_in'] = True
             session['user_key'] = ''.join(random.choices(string.ascii_letters + string.digits, k=24))
+
+            # Initialize the user's cart if it doesn't exist
+            if 'cart' not in session:
+                session['cart'] = []
+
             return redirect(url_for('index'))
         else:
             error = 'Invalid credentials. Please try again.'
@@ -86,26 +91,45 @@ def login():
     return render_template('login.html', error=error)
 
 
-
 @app.route('/logout')
 def logout():
+    # Clear the user's cart when they log out
     session.pop('logged_in', None)
+    session.pop('cart', None)
     return redirect(url_for('index'))
+
 
 @app.route('/help')
 def help():
     return render_template('help.html')
 
-@app.route('/checkout', methods=['POST'])
+@app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
-    cart_data = request.form.get('cart')
-    # Process the cart data here
+    if request.method == 'POST':
+        cart_data = request.form.get('cart')
+        new_cart = json.loads(cart_data)
 
-    # For example, you can convert the JSON string back to a list of items
-    cart = json.loads(cart_data)
+        # Fetch the existing cart from the session
+        existing_cart = session.get('cart', [])
 
-    # You can then pass the cart data to the checkout page
-    return render_template('checkout.html', cart=cart)
+        # Update quantities if the item is already in the cart, else add the item
+        for new_item in new_cart:
+            for existing_item in existing_cart:
+                if new_item['id'] == existing_item['id']:
+                    existing_item['quantity'] += new_item['quantity']
+                    break
+            else:  # If the item was not found in the cart, add it
+                existing_cart.append(new_item)
+
+        session['cart'] = existing_cart
+
+        return render_template('checkout.html', cart=existing_cart)
+    else:
+        # For a GET request, fetch the cart from the session
+        cart = session.get('cart', [])
+        return render_template('checkout.html', cart=cart)
+
+
 
 
 @app.route('/add-to-cart', methods=['POST'])
@@ -132,6 +156,7 @@ def add_to_cart():
     session['cart'] = cart  # Store the updated cart data in the session
 
     return 'Success'
+
 
 
 
