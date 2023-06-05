@@ -54,9 +54,10 @@ class HelpDesk(db.Model):
 @app.route('/')
 def index():
     if session.get('logged_in'):
-        return render_template('index.html', logged_in=True)
+        return render_template('index.html', logged_in=True, username=session.get('username'))
     else:
         return render_template('index.html', logged_in=False)
+
 
 
 @app.route('/tools')
@@ -75,6 +76,7 @@ def login():
         if user is not None:
             # Successful login
             session['logged_in'] = True
+            session['username'] = username
             session['user_key'] = ''.join(random.choices(string.ascii_letters + string.digits, k=24))
 
             # Initialize the user's cart if it doesn't exist
@@ -93,10 +95,12 @@ def login():
 
 @app.route('/logout')
 def logout():
-    # Clear the user's cart when they log out
+    # Clear the user's cart and username when they log out
     session.pop('logged_in', None)
     session.pop('cart', None)
+    session.pop('username', None)
     return redirect(url_for('index'))
+
 
 
 @app.route('/help')
