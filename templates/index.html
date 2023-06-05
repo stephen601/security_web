@@ -4,12 +4,10 @@
   {% if logged_in %}
     <h2>Welcome {{username}}! You are logged in.</h2>
     <!-- Add your logged-in content here -->
-    <p>This is the content for logged-in users.</p>
     <button><a href="/logout">Log out</a></button>
   {% else %}
     <h2>Welcome! Please log in.</h2>
     <!-- Add your non-logged-in content here -->
-    <p>This is the content for non-logged-in users.</p>
     <button><a href="/login">Log in</a></button>
   {% endif %}
 {% endblock %}
