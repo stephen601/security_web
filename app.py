@@ -68,9 +68,12 @@ class HelpDesk(db.Model):
 @app.route('/')
 def index():
     if session.get('logged_in'):
-        return render_template('index.html', logged_in=True, username=session.get('username'))
-    else:
-        return render_template('index.html', logged_in=False)
+        username = session.get('username')
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            return render_template('index.html', logged_in=True, first_name=user.first_name, last_name=user.last_name)
+    return render_template('index.html', logged_in=False)
+
 
 
 

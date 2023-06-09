@@ -2,7 +2,7 @@
 
 {% block content %}
   {% if logged_in %}
-    <h2>Welcome {{username}}! You are logged in.</h2>
+    <h2>Welcome {{ first_name }} {{ last_name }}! You are logged in.</h2>
     <!-- Add your logged-in content here -->
     <button><a href="/logout">Log out</a></button>
   {% else %}
