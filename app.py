@@ -228,9 +228,47 @@ def shop():
     return render_template('shop.html', tools=tools, services=services, logged_in=logged_in)
 
 
-@app.route('/account')
+@app.route('/account', methods=['GET', 'POST'])
 def account():
-    return render_template('account.html', username=session.get('username'))
+    if not session.get('logged_in'):
+        # User is not logged in, handle the error or redirect to the login page
+        return redirect(url_for('login'))
+
+    username = session.get('username')
+    user = Users.query.filter_by(username=username).first()
+    if not user:
+        # User does not exist, handle the error
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        # Validate the password and confirm password fields
+        if password != confirm_password:
+            error = 'Password and confirm password do not match.'
+            return render_template('account.html', user=user, error=error)
+
+        # Update the user information
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+
+        # Update the password if a new password is provided
+        if password:
+            user.set_password(password)
+
+        db.session.commit()
+
+        return redirect(url_for('account'))
+
+    return render_template('account.html', user=user)
+
+
 
 @app.route('/employee')
 def employee():
@@ -291,6 +329,41 @@ def signup():
 
     # If it's a GET request, render the sign-up form
     return render_template('signup.html')
+
+@app.route('/update-account', methods=['POST'])
+def update_account():
+    if not session.get('logged_in'):
+        # User is not logged in, handle the error or redirect to the login page
+        return redirect(url_for('login'))
+
+    user_id = request.form.get('user_id')
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
+
+    if password != confirm_password:
+        error = 'New password and confirm password do not match.'
+        user = Users.query.get(user_id)
+        return render_template('account.html', user=user, error=error)
+
+    user = Users.query.get(user_id)
+    if not user:
+        # User does not exist, handle the error
+        return redirect(url_for('login'))
+
+    user.first_name = first_name
+    user.last_name = last_name
+    user.email = email
+    user.set_password(password)  # Set the new password
+    db.session.commit()
+
+    return redirect(url_for('account'))
+
+
+
+
 
 
 if __name__ == '__main__':
