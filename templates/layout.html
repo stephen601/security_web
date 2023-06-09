@@ -39,9 +39,12 @@
                     <li>
                       <a class="dropdown-item" href="/contact">Contact</a>
                     </li>
+                    <li>
+                      <a href="{{ url_for('signup') }}">Sign Up</a>
+                    </li>
                     {% if session.logged_in %}
                         <li><a class="dropdown-item" href="/account">Account Information</a></li>
-                        <li><a class="dropdown-item" href="#">Employee Dashboard</a></li>
+                        <li><a class="dropdown-item" href="/employee">Employee Dashboard</a></li>
                         <li><a class="dropdown-item" href="/help">Help Desk</a></li>
                     {% endif %}
                   </ul>

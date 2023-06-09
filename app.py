@@ -6,6 +6,7 @@ from flask_session import Session
 import random
 import string
 from sqlalchemy import text
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 
@@ -38,8 +39,19 @@ class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(50), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
     email = db.Column(db.String(50))
+
+    # Add a method to set the password using a hashed value
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    # Add a method to check if the provided password matches the hashed password
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
 
 class HelpDesk(db.Model):
@@ -74,8 +86,8 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = Users.query.filter_by(username=username, password=password).first()
-        if user is not None:
+        user = Users.query.filter_by(username=username).first()
+        if user is not None and user.check_password(password):
             # Successful login
             session['logged_in'] = True
             session['username'] = username
@@ -93,6 +105,7 @@ def login():
         if session.get('logged_in'):
             return redirect(url_for('index'))
     return render_template('login.html', error=error)
+
 
 
 @app.route('/logout')
@@ -205,6 +218,9 @@ def shop():
 def account():
     return render_template('account.html', username=session.get('username'))
 
+@app.route('/employee')
+def employee():
+        return render_template('employee.html', username=session.get('username'))
 
 
 @app.route('/helpdesk', methods=['GET', 'POST'])
@@ -228,6 +244,39 @@ def helpdesk():
     return render_template('helpdesk.html', tickets=tickets)
 
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+
+        # Check if the username already exists
+        existing_user = Users.query.filter_by(username=username).first()
+        if existing_user:
+            error = 'Username already exists. Please choose a different username.'
+            return render_template('signup.html', error=error)
+
+        # Create a new user
+        new_user = Users(
+            username=username,
+            email=email,
+            first_name=first_name,
+            last_name=last_name
+        )
+        new_user.set_password(password)  # Hash the password
+
+        # Add the new user to the database
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Redirect to the login page after successful sign-up
+        return redirect(url_for('login'))
+
+    # If it's a GET request, render the sign-up form
+    return render_template('signup.html')
 
 
 if __name__ == '__main__':

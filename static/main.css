@@ -74,3 +74,21 @@ table {
   h1 {
     color: #3c3b6e; /* blue */
   }
+  .signup-form .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .signup-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .signup-form .form-group input[type="text"],
+  .signup-form .form-group input[type="password"],
+  .signup-form .form-group input[type="email"] {
+    border: 1px solid #ccc;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
