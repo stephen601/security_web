@@ -126,7 +126,7 @@ def help():
     if not session.get('logged_in'):
         # User is not logged in, handle the error or redirect to the login page
         return redirect(url_for('login'))
-        
+
     return render_template('help.html')
 
 
@@ -135,7 +135,7 @@ def checkout():
     if not session.get('logged_in'):
         # User is not logged in, handle the error or redirect to the login page
         return redirect(url_for('login'))
-    
+
     if request.method == 'POST':
         cart_data = request.form.get('cart')
         new_cart = json.loads(cart_data)
