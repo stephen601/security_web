@@ -5,7 +5,7 @@ from datetime import datetime, time
 from flask_session import Session
 import random
 import string
-
+from sqlalchemy import text
 
 
 
@@ -49,6 +49,8 @@ class HelpDesk(db.Model):
     ticket_date = db.Column(db.Date, nullable=False)
     ticket_time = db.Column(db.Time, nullable=False)
     resolved = db.Column(db.Boolean, default=False)
+    fix = db.Column(db.String(100))
+
 
 
 @app.route('/')
@@ -183,9 +185,10 @@ def contact():
         db.session.add(help_desk_entry)
         db.session.commit()
 
-        return redirect(url_for('index'))
+        return redirect(url_for('helpdesk'))
 
     return render_template('contact.html')
+
 
 @app.route('/services')
 def services():
@@ -201,6 +204,30 @@ def shop():
 @app.route('/account')
 def account():
     return render_template('account.html', username=session.get('username'))
+
+
+
+@app.route('/helpdesk', methods=['GET', 'POST'])
+def helpdesk():
+    if request.method == 'POST':
+        ticket_id = request.form.get('ticket_id')
+        resolved = request.form.get('resolved') == 'true'
+        fix = request.form.get('fix')
+
+        ticket = HelpDesk.query.get(ticket_id)
+        ticket.resolved = resolved
+        ticket.fix = fix
+
+        db.session.execute(
+            text("UPDATE HelpDesk SET resolved=:resolved, fix=:fix WHERE ticket_id=:ticket_id"),
+            {'resolved': resolved, 'fix': fix, 'ticket_id': ticket_id}
+        )
+        db.session.commit()
+
+    tickets = HelpDesk.query.all()
+    return render_template('helpdesk.html', tickets=tickets)
+
+
 
 
 if __name__ == '__main__':

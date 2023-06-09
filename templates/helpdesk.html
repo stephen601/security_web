@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <h2>Help Desk Tickets</h2>
+  <table>
+    <tr>
+      <th>Ticket ID</th>
+      <th>Description</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Resolved</th>
+      <th>Fix</th>
+    </tr>
+    {% for ticket in tickets %}
+    <tr>
+      <td>{{ ticket.ticket_id }}</td>
+      <td>{{ ticket.ticket_description }}</td>
+      <td>{{ ticket.ticket_date }}</td>
+      <td>{{ ticket.ticket_time }}</td>
+      <td>
+        <form action="{{ url_for('helpdesk') }}" method="post">
+          <input type="hidden" name="ticket_id" value="{{ ticket.ticket_id }}">
+          <select name="resolved">
+            <option value="false" {% if not ticket.resolved %}selected{% endif %}>False</option>
+            <option value="true" {% if ticket.resolved %}selected{% endif %}>True</option>
+          </select>
+          <input type="text" name="fix" value="{{ ticket.fix }}">
+          <button type="submit">Save</button>
+        </form>
+      </td>
+      <td>{{ ticket.fix }}</td>
+</tr>
+    {% endfor %}
+  </table>
+{% endblock %}
