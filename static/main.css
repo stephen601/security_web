@@ -91,4 +91,13 @@ table {
     width: 100%;
     box-sizing: border-box;
   }
-  
+  .help-desk-button {
+    border: none;
+    border-radius: 5px;
+    background-color: #002868; /* Blue color of the American flag */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+    

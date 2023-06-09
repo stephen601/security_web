@@ -1,8 +1,21 @@
 {% extends 'layout.html' %}
-{%block content%}
 
-<h2>Hello, {{username}}! Welcome to the employee daskboard.</h2>
+{% block content %}
+  <h2>Hello, {{ username }}! Welcome to the employee dashboard.</h2>
 
-<a href="/helpdesk">Go to Help Desk</a>
-
-{%endblock%}
+  <table>
+    <tr>
+      <th>Description</th>
+      <th>Link</th>
+    </tr>
+    <tr>
+      <td>Manage help desk tickets</td>
+      <td>
+        <form action="/helpdesk" method="GET">
+          <button class="help-desk-button" type="submit">Take me to Help Desk</button>
+        </form>
+      </td>
+    </tr>
+    <!-- Add more rows for additional links and descriptions -->
+  </table>
+{% endblock %}
