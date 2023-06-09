@@ -127,6 +127,10 @@ def help():
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    if not session.get('logged_in'):
+        # User is not logged in, handle the error or redirect to the login page
+        return redirect(url_for('login'))
+    
     if request.method == 'POST':
         cart_data = request.form.get('cart')
         new_cart = json.loads(cart_data)
@@ -215,7 +219,9 @@ def services():
 def shop():
     tools = Tools.query.distinct(Tools.tool_name).all()
     services = Services.query.all()
-    return render_template('shop.html', tools=tools, services=services)
+    logged_in = session.get('logged_in', False)  # Get the value of 'logged_in' from the session, default to False if not present
+    return render_template('shop.html', tools=tools, services=services, logged_in=logged_in)
+
 
 @app.route('/account')
 def account():
