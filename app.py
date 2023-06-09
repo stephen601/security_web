@@ -123,7 +123,12 @@ def logout():
 
 @app.route('/help')
 def help():
+    if not session.get('logged_in'):
+        # User is not logged in, handle the error or redirect to the login page
+        return redirect(url_for('login'))
+        
     return render_template('help.html')
+
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
