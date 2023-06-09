@@ -39,12 +39,16 @@
                     <li>
                       <a class="dropdown-item" href="/contact">Contact</a>
                     </li>
+                    <li><hr class="dropdown-divider"></li>
                     <li>
-                      <a href="{{ url_for('signup') }}">Sign Up</a>
+                      <a class="dropdown-item"href="/signup">Sign Up</a>
                     </li>
+                    <li><hr class="dropdown-divider"></li>
                     {% if session.logged_in %}
                         <li><a class="dropdown-item" href="/account">Account Information</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/employee">Employee Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/help">Help Desk</a></li>
                     {% endif %}
                   </ul>
