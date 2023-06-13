@@ -7,6 +7,12 @@ import random
 import string
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Length, Email, EqualTo
+from flask import flash
+
+
 
 
 
@@ -19,7 +25,11 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = '/tmp/flask_session'
 Session(app)
 
-
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+    
 class Tools(db.Model):
     __tablename__ = 'Tools'
     tool_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -85,10 +95,10 @@ def tools():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
         user = Users.query.filter_by(username=username).first()
         if user is not None and user.check_password(password):
             # Successful login
@@ -102,12 +112,13 @@ def login():
 
             return redirect(url_for('index'))
         else:
-            error = 'Invalid credentials. Please try again.'
+            flash('Invalid credentials. Please try again.')
     else:
         # Check if the user is already logged in
         if session.get('logged_in'):
             return redirect(url_for('index'))
-    return render_template('login.html', error=error)
+    return render_template('login.html', form=form)
+
 
 
 
