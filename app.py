@@ -48,11 +48,12 @@ TIME_WINDOW = timedelta(minutes=1)  # Time window for rate limiting (1 minute in
 
 talisman.content_security_policy = {
     'default-src': ["'self'"],
-    'script-src': ["'self'", 'example.com'],
-    'style-src': ["'self'"],
+    'script-src': ["'self'", 'cdn.jsdelivr.net', 'example.com'],
+    'style-src': ["'self'", "'nonce'", 'cdn.jsdelivr.net'],
     'img-src': ["'self'"],
     'font-src': ["'self'"],
 }
+
 talisman.force_https = True
 talisman.strict_transport_security = True
 talisman.hsts_max_age = 31536000
@@ -116,6 +117,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
+    nonce = ''.join(random.choices(string.ascii_letters + string.digits, k=16))    
     if current_user.is_authenticated:
         return render_template('index.html', logged_in=True, user=current_user)
     return render_template('index.html', logged_in=False)

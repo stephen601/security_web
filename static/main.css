@@ -100,4 +100,16 @@ table {
     font-size: 16px;
     cursor: pointer;
   }
-    
+  .navbar {
+    background-color: #b22234; /* red */
+    display: flex;
+    justify-content: space-between; /* evenly distribute items horizontally */
+    align-items: center; /* vertically center items */
+  }
+  
+  .navbar-brand,
+  .nav-link {
+    color: #fff;
+    margin: 0 10px; /* add spacing between items */
+  }
+  
