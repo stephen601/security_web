@@ -18,7 +18,7 @@ from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta
-
+from flask_talisman import Talisman
 
 
 
@@ -32,6 +32,7 @@ app.secret_key = os.urandom(24)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = '/tmp/flask_session'
 Session(app)
+talisman = Talisman(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -45,6 +46,18 @@ TIME_WINDOW = timedelta(minutes=1)  # Time window for rate limiting (1 minute in
 
 # Custom decorator to apply rate limit to the login route
 
+talisman.content_security_policy = {
+    'default-src': ["'self'"],
+    'script-src': ["'self'", 'example.com'],
+    'style-src': ["'self'"],
+    'img-src': ["'self'"],
+    'font-src': ["'self'"],
+}
+talisman.force_https = True
+talisman.strict_transport_security = True
+talisman.hsts_max_age = 31536000
+talisman.force_file_save = True
+talisman.content_type_options = {'nosniff': True}
 
 
 class LoginForm(FlaskForm):
