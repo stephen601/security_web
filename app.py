@@ -11,6 +11,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask import flash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from flask_login import current_user
 
 
 
@@ -24,6 +26,10 @@ app.secret_key = os.urandom(24)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = '/tmp/flask_session'
 Session(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
@@ -45,7 +51,7 @@ class Services(db.Model):
     service_image = db.Column(db.String(50))
 
 
-class Users(db.Model):
+class Users(UserMixin, db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50), nullable=False)
@@ -54,13 +60,14 @@ class Users(db.Model):
     last_name = db.Column(db.String(50))
     email = db.Column(db.String(50))
 
-    # Add a method to set the password using a hashed value
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    # Add a method to check if the provided password matches the hashed password
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return str(self.user_id)
 
 
 
@@ -73,17 +80,16 @@ class HelpDesk(db.Model):
     resolved = db.Column(db.Boolean, default=False)
     fix = db.Column(db.String(100))
 
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
 
 
 @app.route('/')
 def index():
-    if session.get('logged_in'):
-        username = session.get('username')
-        user = Users.query.filter_by(username=username).first()
-        if user:
-            return render_template('index.html', logged_in=True, first_name=user.first_name, last_name=user.last_name)
+    if current_user.is_authenticated:
+        return render_template('index.html', logged_in=True, user=current_user)
     return render_template('index.html', logged_in=False)
-
 
 
 
@@ -101,34 +107,25 @@ def login():
         password = form.password.data
         user = Users.query.filter_by(username=username).first()
         if user is not None and user.check_password(password):
-            # Successful login
-            session['logged_in'] = True
-            session['username'] = username
-            session['user_key'] = ''.join(random.choices(string.ascii_letters + string.digits, k=24))
-
-            # Initialize the user's cart if it doesn't exist
-            if 'cart' not in session:
-                session['cart'] = []
-
+            login_user(user)
             return redirect(url_for('index'))
         else:
             flash('Invalid credentials. Please try again.')
     else:
-        # Check if the user is already logged in
-        if session.get('logged_in'):
+        if current_user.is_authenticated:
             return redirect(url_for('index'))
     return render_template('login.html', form=form)
 
-
-
+# ...
 
 @app.route('/logout')
+@login_required
 def logout():
-    # Clear the user's cart and username when they log out
-    session.pop('logged_in', None)
-    session.pop('cart', None)
-    session.pop('username', None)
+    logout_user()
+    session.clear()
     return redirect(url_for('index'))
+
+
 
 
 
@@ -240,44 +237,34 @@ def shop():
 
 
 @app.route('/account', methods=['GET', 'POST'])
+@login_required
 def account():
-    if not session.get('logged_in'):
-        # User is not logged in, handle the error or redirect to the login page
-        return redirect(url_for('login'))
-
-    username = session.get('username')
-    user = Users.query.filter_by(username=username).first()
-    if not user:
-        # User does not exist, handle the error
-        return redirect(url_for('login'))
-
     if request.method == 'POST':
-        user_id = request.form.get('user_id')
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
 
-        # Validate the password and confirm password fields
         if password != confirm_password:
-            error = 'Password and confirm password do not match.'
-            return render_template('account.html', user=user, error=error)
+            flash('Password and confirm password do not match.', 'error')
+            return redirect(url_for('account'))
 
-        # Update the user information
+        user = current_user
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
 
-        # Update the password if a new password is provided
         if password:
             user.set_password(password)
 
         db.session.commit()
 
+        flash('Account information updated successfully.', 'success')
         return redirect(url_for('account'))
 
-    return render_template('account.html', user=user)
+    return render_template('account.html', user=current_user)
+
 
 
 
