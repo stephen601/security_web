@@ -411,6 +411,20 @@ def update_account():
 
     return redirect(url_for('account'))
 
+@app.errorhandler(404)
+def handle_not_found_error(error):
+    # Handle the 404 Not Found error
+    return render_template('404.html'), 404
+
+@app.errorhandler(Exception)
+def handle_generic_error(error):
+    # Handle generic exceptions
+    # Log the error, display a generic error message, or perform other appropriate actions
+    return render_template('error.html'), 500
+
+@app.route('/test-error')
+def test_error():
+    raise Exception("This is a test exception")
 
 
 
