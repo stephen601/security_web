@@ -13,11 +13,17 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask import flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask_login import current_user
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from datetime import datetime, timedelta
 
 
 
 
 
+# ...
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///USH.sqlite'
@@ -29,6 +35,16 @@ Session(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+# Rate limiting parameters
+MAX_REQUESTS = 4 # Maximum number of requests
+TIME_WINDOW = timedelta(minutes=1)  # Time window for rate limiting (1 minute in this example)
+
+
+# Custom decorator to apply rate limit to the login route
+  # Apply rate limit to the login route
+
+# Custom decorator to apply rate limit to the login route
+
 
 
 class LoginForm(FlaskForm):
@@ -99,10 +115,23 @@ def tools():
     return render_template('tools.html', tools=tools)
 
 
+# ...
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Check if the user has exceeded the rate limit
+    if 'last_request_time' in session and 'request_count' in session:
+        last_request_time = session['last_request_time']
+        request_count = session['request_count']
+        if datetime.now() < last_request_time + TIME_WINDOW and request_count >= MAX_REQUESTS:
+            # User has exceeded the rate limit, show an error message or redirect
+            flash('Too many login attempts. Please try again later.')
+            return redirect(url_for('index'))
+
     form = LoginForm()
     if form.validate_on_submit():
+        # Process the login form
         username = form.username.data
         password = form.password.data
         user = Users.query.filter_by(username=username).first()
@@ -111,10 +140,20 @@ def login():
             return redirect(url_for('index'))
         else:
             flash('Invalid credentials. Please try again.')
-    else:
-        if current_user.is_authenticated:
-            return redirect(url_for('index'))
+
+    # Update the request count and last request time in the session
+    session['request_count'] = session.get('request_count', 0) + 1
+    session['last_request_time'] = datetime.now()
+
     return render_template('login.html', form=form)
+
+
+
+
+
+
+
+
 
 # ...
 
